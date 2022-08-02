@@ -224,7 +224,7 @@ for key, value in no_intro_type.items():
         print(tempName)
 
         # URL tag in XML
-        ET.SubElement(tag_datfile, 'url').text = f'https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/{archive_name}'
+        ET.SubElement(tag_datfile, 'url').text = f'https://github.com/dantob/auto-datfile-generator/releases/latest/download/{archive_name}'
 
         # File tag in XML
         fileName = dat
