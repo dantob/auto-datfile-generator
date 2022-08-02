@@ -33,9 +33,9 @@ jobs:
           id: generator_redump
           run: pipenv run python3 redump.py
 
-        - name: Download dats and generate profile.xml for No-Intro
-          id: generator_no_intro
-          run: pipenv run python3 no-intro.py
+#        - name: Download dats and generate profile.xml for No-Intro
+#          id: generator_no_intro
+#          run: pipenv run python3 no-intro.py
 
         - name: Download dats and generate profile.xml for HTGD
           id: generator_smdb
