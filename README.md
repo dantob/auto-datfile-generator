@@ -1,6 +1,6 @@
 # Auto DAT file generator
 
-![Daily Rebuild Status](https://github.com/hugo19941994/auto-datfile-generator/actions/workflows/daily-rebuild.yml/badge.svg)
+![Daily Rebuild Status](https://github.com/dantob/auto-datfile-generator/actions/workflows/daily-rebuild.yml/badge.svg)
 
 WWW profiles to use in clrmamepro for the standard No-Intro and Redump sets.
 Refreshes once every 24h automatically.
@@ -9,15 +9,15 @@ Refreshes once every 24h automatically.
 
 ### No-Intro
 
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/no-intro.xml`
+`https://github.com/dantob/auto-datfile-generator/releases/latest/download/no-intro.xml`
 
 ### No-Intro (parent-clone)
 
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/no-intro_parent-clone.xml`
+`https://github.com/dantob/auto-datfile-generator/releases/latest/download/no-intro_parent-clone.xml`
 
 ### Redump
 
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/redump.xml`
+`https://github.com/dantob/auto-datfile-generator/releases/latest/download/redump.xml`
 
 <!-- disabled for CI failures -->
 <!-- ### Hardware Target Game Database
