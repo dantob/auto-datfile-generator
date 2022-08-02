@@ -10,7 +10,7 @@ import requests
 URL_HOME      = "http://redump.org/"
 URL_DOWNLOADS = "http://redump.org/downloads/"
 XML_FILENAME  = "redump.xml"
-XML_URL       = "https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/redump.zip"
+XML_URL       = "https://github.com/dantob/auto-datfile-generator/releases/latest/download/redump.zip"
 
 regex = {
     "datfile"  : r'<a href="/datfile/(.*?)">',
