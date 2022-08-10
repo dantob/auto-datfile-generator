@@ -1,25 +1,26 @@
-from PIL import Image
-from colormath.color_conversions import convert_color
-from colormath.color_diff import delta_e_cie1976
-from colormath.color_objects import LabColor, sRGBColor
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.support.ui import Select
 from time import sleep
-import hashlib
+import xml.etree.ElementTree as ET
+
 import os
 import re
-import requests
-import xml.etree.ElementTree as ET
 import zipfile
+
+#from colormath.color_conversions import convert_color
+#from colormath.color_diff import delta_e_cie1976
+#from colormath.color_objects import LabColor, sRGBColor
+
+#from PIL import Image
+#import requests
+
+#from selenium.common.exceptions import NoSuchElementException
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
+#from selenium.webdriver.support.ui import Select
 
 regex = {
     'date'     : r'[0-9]{8}-[0-9]{6}',
-    'name'     : r'(.*?.)( \([0-9]{8}-[0-9]{6}\).dat)',
-    'skipfiles': r'(.*?.)( \(#[0-9]{1,4}?.*\).dat)',
+    'name'     : r'(.*?.)( \([0-9]{8}-[0-9]{6}\).dat)'
 }
 
 no_intro_type = {
@@ -29,13 +30,13 @@ no_intro_type = {
 
 for key, value in no_intro_type.items():
 
-    # Dowload no-intro pack using selenium
+    # Download no-intro pack using selenium
     dir_path = os.path.dirname(os.path.realpath(__file__))
     options=Options()
-    options.set_preference("browser.download.folderList", 2);
-    options.set_preference("browser.download.manager.showWhenStarting", False);
-    options.set_preference("browser.download.dir", dir_path);
-    options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/zip");
+    options.set_preference("browser.download.folderList", 2)
+    options.set_preference("browser.download.manager.showWhenStarting", False)
+    options.set_preference("browser.download.dir", dir_path)
+    options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/zip")
     options.headless = True
 
     service = Service()
@@ -44,109 +45,165 @@ for key, value in no_intro_type.items():
     driver.implicitly_wait(10)
 
     driver.get("https://datomatic.no-intro.org")
+    print('Loaded Nointro ...')
 
     # select downloads
     driver.find_element(by='xpath', value='/html/body/div/header/nav/ul/li[3]/a').click()
+    print('Clicked "Download" ...')
 
     # select daily downloads
     driver.find_element(by='xpath', value='/html/body/div/section/article/table[1]/tbody/tr/td/a[5]').click()
+    print('Clicked "Daily" ...')
 
-    # find the type of dat file
-    x = driver.find_element(by='name', value='dat_type')
-    drop = Select(x)
+    # select only 'main' dat set
+    #driver.find_element(by='name', value='set2').click() #uncheck Source Code
+    #sleep(3)
+    #driver.find_element(by='name', value='set3').click() #uncheck Non-Redump
+    #sleep(3)
+    #driver.find_element(by='name', value='set4').click() #uncheck Unofficial
+    #sleep(3)
+    #print('Set Options ...')
 
-    # Select by value
-    drop.select_by_value(value)
-    sleep(5)
+    #set the type of dat file
+    if key == 'standard' :
+        driver.find_element(by='xpath', value="//input[@name='dat_type' and @value='standard']").click()
+    if key == 'parent-clone' :
+        driver.find_element(by='xpath', value="//input[@name='dat_type' and @value='xml']").click()
+    print('Set Dat Type ...')
 
-    # click the prepare button
-    driver.find_element(by='xpath', value=f'/html/body/div/section/article/div/form/input[1]').click()
+    # click the Request button
+    driver.find_element(by='name', value='valentine_day').click()
+    sleep(10)
+    print('Clicked "Request" ...')
 
-    captcha = False
+    # click Download
+    driver.find_element(by='name', value='lazy_mode').click()
+    print('Clicked "Download" ...')
 
-    try:
-        captcha_image = driver.find_element(by='xpath', value='/html/body/div/section/article/div/form/img').get_attribute('src')
-        captcha = True
-    except NoSuchElementException:
-        pass
-    print(f'Captcha: {captcha}')
+    print('Waiting for download ...')
 
-    if not captcha:
-        buttons = driver.find_elements(by='xpath', value="/html/body/div/section/article/div/form/input[@type='submit']")
-        if len(buttons) == 1:
-            btn_name = buttons[0].get_attribute('name')
-            driver.find_element(by='name', value=btn_name).click()
-    else:
-        # download the captcha image
-        image = Image.open(requests.get(captcha_image, stream=True).raw).convert('RGB')
-        # Resize to get average color
-        image = image.resize((1, 1))
-        color = image.getpixel((0, 0))
+    #captcha = False
 
-        # Instantiate an sRGBColor object and convert to lab to check deltas
-        color_rgb = sRGBColor(rgb_r=color[0], rgb_g=color[1], rgb_b=color[2], is_upscaled=True)
-        color_lab = convert_color(color_rgb, LabColor)
+    #try:
+    #    captcha_image = driver.find_element(by='xpath', value='/html/body/div/section/article/div/form/img').get_attribute('src')
+    #    captcha = True
+    #except NoSuchElementException:
+    #    pass
+    #print(f'Captcha: {captcha}\n')
 
-        # Get colors from the buttons
-        buttons_dict = {}
-        buttons = driver.find_elements(by='xpath', value="/html/body/div/section/article/div/form/input[@type='submit']")
-        for btn in buttons:
-            # Extract color from the button's background css property
-            r, g, b = btn.value_of_css_property("background-color")[4:-1].split(', ')
-            btn_rgb = sRGBColor(rgb_r=int(r), rgb_g=int(g), rgb_b=int(b), is_upscaled=True)
-            btn_lab = convert_color(btn_rgb, LabColor)
+    #if not captcha:
+    #    buttons = driver.find_elements(by='xpath', value="/html/body/div/section/article/div/form/input[@type='submit']")
+    #    if len(buttons) == 1:
+    #        btn_name = buttons[0].get_attribute('name')
+    #        driver.find_element(by='name', value=btn_name).click()
+    #else:
+    #    # download the captcha image
+    #    image = Image.open(requests.get(captcha_image, stream=True).raw).convert('RGB')
+    #    # Resize to get average color
+    #    image = image.resize((1, 1))
+    #   color = image.getpixel((0, 0))
 
-            # get difference of color between button and captcha_image
-            delta_e = delta_e_cie1976(btn_lab, color_lab)
+    #    # Instantiate an sRGBColor object and convert to lab to check deltas
+    #    color_rgb = sRGBColor(rgb_r=color[0], rgb_g=color[1], rgb_b=color[2], is_upscaled=True)
+    #    color_lab = convert_color(color_rgb, LabColor)
 
-            buttons_dict[btn.get_attribute('name')] = delta_e
-        closest_button_name = min(buttons_dict, key=buttons_dict.get)
+    #    # Get colors from the buttons
+    #    buttons_dict = {}
+    #    buttons = driver.find_elements(by='xpath', value="/html/body/div/section/article/div/form/input[@type='submit']")
+    #    for btn in buttons:
+    #        # Extract color from the button's background css property
+    #        r, g, b = btn.value_of_css_property("background-color")[4:-1].split(', ')
+    #        btn_rgb = sRGBColor(rgb_r=int(r), rgb_g=int(g), rgb_b=int(b), is_upscaled=True)
+    #        btn_lab = convert_color(btn_rgb, LabColor)
 
-        # click the correct captcha color coded download button
-        driver.find_element_by_name(closest_button_name).click()
+    #       # get difference of color between button and captcha_image
+    #       delta_e = delta_e_cie1976(btn_lab, color_lab)
 
+    #       buttons_dict[btn.get_attribute('name')] = delta_e
+    #   closest_button_name = min(buttons_dict, key=buttons_dict.get)
+
+    #   # click the correct captcha color coded download button
+    #   driver.find_element(by='name', value=closest_button_name).click()
 
     # wait until file is found
-    found = False
-    name = None
-    time_slept = 0
-    while not found:
-        if time_slept > 360:
+    FOUND = False
+    NAME = None
+    TIME_SLEPT = 0
+    while not FOUND:
+        if TIME_SLEPT > 360:
             raise Exception(f'No-Intro {key} zip file not found')
 
         for f in os.listdir(dir_path):
             if 'No-Intro Love Pack' in f and not f.endswith('.part'):
                 try:
                     zipfile.ZipFile(os.path.join(dir_path, f))
-                    name = f
-                    found = True
+                    NAME = f
+                    FOUND = True
+                    print('Download Completed ...')
                     break
                 except zipfile.BadZipfile:
                     pass
 
         # wait 5 seconds
         sleep(5)
-        time_slept += 5
+        TIME_SLEPT += 5
 
+    #setup archive path and rename
     archive_name = 'no-intro.zip' if key == 'standard' else f'no-intro_{key}.zip'
     archive_full = os.path.join(dir_path, archive_name)
-    os.rename(os.path.join(dir_path, name), os.path.join(dir_path, archive_full))
+    os.rename(os.path.join(dir_path, NAME), os.path.join(dir_path, archive_full))
 
     # load & extract zip file, there is currently no way to remove files from zip archive
-    orig_archive  = zipfile.ZipFile(os.path.join(dir_path, archive_full), mode='r')
-    orig_archive.extractall()
-    orig_archive.close()
-    # delete unneeded files
-    os.remove('hashes.txt')
-    os.remove('index.txt')
+    with zipfile.ZipFile(os.path.join(dir_path, archive_full), mode='r') as orig_archive:
+        orig_archive.extractall()
+        # delete unneeded files
+        os.remove('index.txt')
 
-    # build new zip archive
-    archive = zipfile.ZipFile(os.path.join(dir_path, archive_full), mode='w', compression=zipfile.ZIP_DEFLATED, compresslevel=9)
-    for x in os.listdir(path='.'):
-        if x.endswith(".dat"):
-            print(x)
-            archive.write(x)
-            os.remove(x)
+    print('Building new archive ...')
+    with zipfile.ZipFile(os.path.join(dir_path, archive_full), mode='w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+        for f in os.listdir(dir_path):
+            if 'No-Intro' in f:
+                print('\nAdding No-Intro dats ...')
+                os.chdir('./No-Intro')
+                for x in os.listdir(path='.'):
+                    if x.endswith(".dat"):
+                        print('Adding to Archive: ', x)
+                        archive.write(x)
+                        os.remove(x)
+                os.chdir('../')
+                os.rmdir('./No-Intro')
+            if 'Non-Redump' in f:
+                print('\nAdding No-Intro Non-Redump dats ...')
+                os.chdir('./Non-Redump')
+                for x in os.listdir(path='.'):
+                    if x.endswith(".dat"):
+                        print('Adding to Archive: ', x)
+                        archive.write(x)
+                        os.remove(x)
+                os.chdir('../')
+                os.rmdir('./Non-Redump')
+            if 'Source Code' in f:
+                print('\nAdding No-Intro Source Code dats ...')
+                os.chdir('./Source Code')
+                for x in os.listdir(path='.'):
+                    if x.endswith(".dat"):
+                        print('Adding to Archive: ', x)
+                        archive.write(x)
+                        os.remove(x)
+                os.chdir('../')
+                os.rmdir('./Source Code')
+            if 'Unofficial' in f:
+                print('\nAdding No-Intro Unofficial dats ...')
+                os.chdir('./Unofficial')
+                for x in os.listdir(path='.'):
+                    if x.endswith(".dat"):
+                        print('Adding to Archive: ', x)
+                        archive.write(x)
+                        os.remove(x)
+                os.chdir('../')
+                os.rmdir('./Unofficial')
+
+    print('\nCreating new clrmamepro datfile ...')
 
     # clrmamepro XML file
     tag_clrmamepro = ET.Element('clrmamepro')
@@ -167,17 +224,13 @@ for key, value in no_intro_type.items():
         print(tempName)
 
         # URL tag in XML
-        ET.SubElement(
-            tag_datfile, 'url').text = f'https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/{archive_name}'
+        ET.SubElement(tag_datfile, 'url').text = f'https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/{archive_name}'
 
         # File tag in XML
         fileName = dat
         fileName = f'{fileName[:-4]}.dat'
         ET.SubElement(tag_datfile, 'file').text = fileName
         print(fileName)
-
-        # click the correct captcha color coded download button
-        driver.find_element(by='name', value=closest_button_name).click()
 
         # Author tag in XML
         ET.SubElement(tag_datfile, 'author').text = 'no-intro.org'
@@ -192,5 +245,8 @@ for key, value in no_intro_type.items():
     # store clrmamepro XML file
     xmldata = ET.tostring(tag_clrmamepro).decode()
     xml_filename = 'no-intro.xml' if key == 'standard' else f'no-intro_{key}.xml'
-    xmlfile = open(xml_filename, 'w')
-    xmlfile.write(xmldata)
+
+    with open(xml_filename, 'w', encoding="utf-8") as xmlfile:
+        xmlfile.write(xmldata)
+
+    print('Finished')

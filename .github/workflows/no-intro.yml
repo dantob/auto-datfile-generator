@@ -1,4 +1,4 @@
-name: Daily WWW clrmamepro profiles
+name: No-Intro daily rebuild
 
 on:
     push:
@@ -19,9 +19,9 @@ jobs:
           uses: actions/checkout@v3
 
         - name: Setup Python
-          uses: actions/setup-python@v2
+          uses: actions/setup-python@v4
           with:
-            python-version: 3.9
+            python-version: '3.9'
 
         - name: Install pipenv
           run: sudo pip install pipenv
@@ -29,21 +29,9 @@ jobs:
         - name: Install dependencies using Pipenv
           run: pipenv install --deploy
 
-        - name: Download dats and generate profile.xml for Redump
-          id: generator_redump
-          run: pipenv run python3 redump.py
-
         - name: Download dats and generate profile.xml for No-Intro
           id: generator_no_intro
           run: pipenv run python3 no-intro.py
-
-        - name: Download dats and generate profile.xml for HTGD
-          id: generator_smdb
-          run: pipenv run python3 smdb.py
-
-        - name: Download dats and generate profile.xml for dats.site
-          id: generator_dats_site
-          run: pipenv run python3 dats-site.py
 
         - name: Create release
           uses: ncipollo/release-action@v1

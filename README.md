@@ -1,10 +1,12 @@
 # Auto DAT file generator
 
-![Daily WWW clrmamepro profiles](https://github.com/hugo19941994/auto-datfile-generator/workflows/Daily%20WWW%20clrmamepro%20profiles/badge.svg)
+![Redump](https://github.com/dantob/auto-datfile-generator/actions/workflows/redump.yml/badge.svg)
 
-WWW profiles to use in clrmamepro for the standard No-Intro and Redump sets.
+![No-Intro](https://github.com/dantob/auto-datfile-generator/actions/workflows/no-intro.yml/badge.svg)
 
-Refreshes once every 24h automatically.
+![dats.site](https://github.com/dantob/auto-datfile-generator/actions/workflows/dats.site.yml/badge.svg)
+
+![SMDB](https://github.com/dantob/auto-datfile-generator/actions/workflows/smdb.yml/badge.svg)
 
 ## URLs
 
