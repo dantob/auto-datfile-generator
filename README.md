@@ -4,31 +4,19 @@
 
 ![No-Intro](https://github.com/dantob/auto-datfile-generator/actions/workflows/no-intro.yml/badge.svg)
 
-![dats.site](https://github.com/dantob/auto-datfile-generator/actions/workflows/dats.site.yml/badge.svg)
-
-![SMDB](https://github.com/dantob/auto-datfile-generator/actions/workflows/smdb.yml/badge.svg)
-
 ## URLs
 
 ### No-Intro
 
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/no-intro.xml`
+`https://github.com/dantob/auto-datfile-generator/releases/latest/download/no-intro.xml`
 
 ### No-Intro (parent-clone)
 
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/no-intro_parent-clone.xml`
+`https://github.com/dantob/auto-datfile-generator/releases/latest/download/no-intro_parent-clone.xml`
 
 ### Redump
 
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/redump.xml`
-
-### Hardware Target Game Database
-
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/smdb.xml`
-
-### Custom dats.site
-
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/dats-site.xml`
+`https://github.com/dantob/auto-datfile-generator/releases/latest/download/redump.xml`
 
 ![clrmamepro screenshot](./img/clrmamepro.png)
 
