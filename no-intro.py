@@ -33,11 +33,12 @@ for key, value in no_intro_type.items():
     # Download no-intro pack using selenium
     dir_path = os.path.dirname(os.path.realpath(__file__))
     options=Options()
+    
     options.set_preference("browser.download.folderList", 2)
     options.set_preference("browser.download.manager.showWhenStarting", False)
     options.set_preference("browser.download.dir", dir_path)
     options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/zip")
-    options.headless = True
+    options.add_argument  ("-headless")
 
     service = Service()
 
