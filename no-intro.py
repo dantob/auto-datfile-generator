@@ -1,39 +1,35 @@
-from time import sleep
-import xml.etree.ElementTree as ET
-
 import os
 import re
+import xml.etree.ElementTree as ET
 import zipfile
+from time import sleep
 
+#import requests
 #from colormath.color_conversions import convert_color
 #from colormath.color_diff import delta_e_cie1976
 #from colormath.color_objects import LabColor, sRGBColor
-
 #from PIL import Image
-#import requests
-
-#from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
+#from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
 #from selenium.webdriver.support.ui import Select
 
 regex = {
-    'date'     : r'[0-9]{8}-[0-9]{6}',
-    'name'     : r'(.*?.)( \([0-9]{8}-[0-9]{6}\).dat)'
+    "date"     : r"[0-9]{8}-[0-9]{6}",
+    "name"     : r"(.*?.)( \([0-9]{8}-[0-9]{6}\).dat)"
 }
 
 no_intro_type = {
-    'standard': 'standard',
-    'parent-clone': 'xml'
+    "standard": "standard",
+    "parent-clone": "xml"
 }
 
 for key, value in no_intro_type.items():
-
     # Download no-intro pack using selenium
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    options=Options()
-    
+    options = Options()
+
     options.set_preference("browser.download.folderList", 2)
     options.set_preference("browser.download.manager.showWhenStarting", False)
     options.set_preference("browser.download.dir", dir_path)
@@ -46,14 +42,14 @@ for key, value in no_intro_type.items():
     driver.implicitly_wait(10)
 
     driver.get("https://datomatic.no-intro.org")
-    print('Loaded Nointro ...')
+    print("Loaded Nointro ...")
 
     # select downloads
-    driver.find_element(by='xpath', value='/html/body/div/header/nav/ul/li[3]/a').click()
+    driver.find_element(by="xpath", value="/html/body/div/header/nav/ul/li[3]/a").click()
     print('Clicked "Download" ...')
 
     # select daily downloads
-    driver.find_element(by='xpath', value='/html/body/div/section/article/table[1]/tbody/tr/td/a[5]').click()
+    driver.find_element(by="xpath", value="/html/body/div/section/article/table[1]/tbody/tr/td/a[5]").click()
     print('Clicked "Daily" ...')
 
     # select only 'main' dat set
@@ -65,23 +61,23 @@ for key, value in no_intro_type.items():
     #sleep(3)
     #print('Set Options ...')
 
-    #set the type of dat file
-    if key == 'standard' :
-        driver.find_element(by='xpath', value="//input[@name='dat_type' and @value='standard']").click()
-    if key == 'parent-clone' :
-        driver.find_element(by='xpath', value="//input[@name='dat_type' and @value='xml']").click()
-    print('Set Dat Type ...')
+    # set the type of dat file
+    if key == "standard":
+        driver.find_element(by="xpath", value="//input[@name='dat_type' and @value='standard']").click()
+    if key == "parent-clone":
+        driver.find_element(by="xpath", value="//input[@name='dat_type' and @value='xml']").click()
+    print("Set Dat Type ...")
 
     # click the Request button
-    driver.find_element(by='name', value='valentine_day').click()
+    driver.find_element(by="name", value="valentine_day").click()
     sleep(10)
     print('Clicked "Request" ...')
 
     # click Download
-    driver.find_element(by='name', value='lazy_mode').click()
+    driver.find_element(by="name", value="lazy_mode").click()
     print('Clicked "Download" ...')
 
-    print('Waiting for download ...')
+    print("Waiting for download ...")
 
     #captcha = False
 
@@ -132,15 +128,15 @@ for key, value in no_intro_type.items():
     TIME_SLEPT = 0
     while not FOUND:
         if TIME_SLEPT > 360:
-            raise Exception(f'No-Intro {key} zip file not found')
+            raise Exception(f"No-Intro {key} zip file not found")
 
         for f in os.listdir(dir_path):
-            if 'No-Intro Love Pack' in f and not f.endswith('.part'):
+            if "No-Intro Love Pack" in f and not f.endswith(".part"):
                 try:
                     zipfile.ZipFile(os.path.join(dir_path, f))
                     NAME = f
                     FOUND = True
-                    print('Download Completed ...')
+                    print("Download Completed ...")
                     break
                 except zipfile.BadZipfile:
                     pass
@@ -149,95 +145,97 @@ for key, value in no_intro_type.items():
         sleep(5)
         TIME_SLEPT += 5
 
-    #setup archive path and rename
-    archive_name = 'no-intro.zip' if key == 'standard' else f'no-intro_{key}.zip'
+    # setup archive path and rename
+    archive_name = "no-intro.zip" if key == "standard" else f"no-intro_{key}.zip"
     archive_full = os.path.join(dir_path, archive_name)
     os.rename(os.path.join(dir_path, NAME), os.path.join(dir_path, archive_full))
 
     # load & extract zip file, there is currently no way to remove files from zip archive
-    with zipfile.ZipFile(os.path.join(dir_path, archive_full), mode='r') as orig_archive:
+    with zipfile.ZipFile(os.path.join(dir_path, archive_full), mode="r") as orig_archive:
         orig_archive.extractall()
         # delete unneeded files
-        os.remove('index.txt')
+        os.remove("index.txt")
 
-    print('Building new archive ...')
-    with zipfile.ZipFile(os.path.join(dir_path, archive_full), mode='w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+    print("Building new archive ...")
+    with zipfile.ZipFile(os.path.join(dir_path, archive_full), mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=9, ) as archive:
         for f in os.listdir(dir_path):
-            if 'No-Intro' in f:
-                print('\nAdding No-Intro dats ...')
-                os.chdir('./No-Intro')
-                for x in os.listdir(path='.'):
+            if "No-Intro" in f:
+                print("\nAdding No-Intro dats ...")
+                os.chdir("./No-Intro")
+                for x in os.listdir(path="."):
                     if x.endswith(".dat"):
-                        print('Adding to Archive: ', x)
+                        print("Adding to Archive: ", x)
                         archive.write(x)
                         os.remove(x)
-                os.chdir('../')
-                os.rmdir('./No-Intro')
-            if 'Non-Redump' in f:
-                print('\nAdding No-Intro Non-Redump dats ...')
-                os.chdir('./Non-Redump')
-                for x in os.listdir(path='.'):
+                os.chdir("../")
+                os.rmdir("./No-Intro")
+            if "Non-Redump" in f:
+                print("\nAdding No-Intro Non-Redump dats ...")
+                os.chdir("./Non-Redump")
+                for x in os.listdir(path="."):
                     if x.endswith(".dat"):
-                        print('Adding to Archive: ', x)
+                        print("Adding to Archive: ", x)
                         archive.write(x)
                         os.remove(x)
-                os.chdir('../')
-                os.rmdir('./Non-Redump')
-            if 'Source Code' in f:
-                print('\nAdding No-Intro Source Code dats ...')
-                os.chdir('./Source Code')
-                for x in os.listdir(path='.'):
+                os.chdir("../")
+                os.rmdir("./Non-Redump")
+            if "Source Code" in f:
+                print("\nAdding No-Intro Source Code dats ...")
+                os.chdir("./Source Code")
+                for x in os.listdir(path="."):
                     if x.endswith(".dat"):
-                        print('Adding to Archive: ', x)
+                        print("Adding to Archive: ", x)
                         archive.write(x)
                         os.remove(x)
-                os.chdir('../')
-                os.rmdir('./Source Code')
-            if 'Unofficial' in f:
-                print('\nAdding No-Intro Unofficial dats ...')
-                os.chdir('./Unofficial')
-                for x in os.listdir(path='.'):
+                os.chdir("../")
+                os.rmdir("./Source Code")
+            if "Unofficial" in f:
+                print("\nAdding No-Intro Unofficial dats ...")
+                os.chdir("./Unofficial")
+                for x in os.listdir(path="."):
                     if x.endswith(".dat"):
-                        print('Adding to Archive: ', x)
+                        print("Adding to Archive: ", x)
                         archive.write(x)
                         os.remove(x)
-                os.chdir('../')
-                os.rmdir('./Unofficial')
+                os.chdir("../")
+                os.rmdir("./Unofficial")
 
-    print('\nCreating new clrmamepro datfile ...')
+    print("\nCreating new clrmamepro datfile ...")
 
     # clrmamepro XML file
-    tag_clrmamepro = ET.Element('clrmamepro')
+    tag_clrmamepro = ET.Element("clrmamepro")
     for dat in archive.namelist():
         print(dat)
         # section for this dat in the XML file
-        tag_datfile = ET.SubElement(tag_clrmamepro, 'datfile')
+        tag_datfile = ET.SubElement(tag_clrmamepro, "datfile")
 
         # XML version
-        dat_date = re.findall(regex['date'], dat)[0]
-        ET.SubElement(tag_datfile, 'version').text = dat_date
+        dat_date = re.findall(regex["date"], dat)[0]
+        ET.SubElement(tag_datfile, "version").text = dat_date
         print(dat_date)
 
         # XML name & description
-        tempName = re.findall(regex['name'], dat)[0][0]
-        ET.SubElement(tag_datfile, 'name').text = tempName
-        ET.SubElement(tag_datfile, 'description').text = tempName
+        tempName = re.findall(regex["name"], dat)[0][0]
+        ET.SubElement(tag_datfile, "name").text = tempName
+        ET.SubElement(tag_datfile, "description").text = tempName
         print(tempName)
 
         # URL tag in XML
-        ET.SubElement(tag_datfile, 'url').text = f'https://github.com/dantob/auto-datfile-generator/releases/latest/download/{archive_name}'
+        ET.SubElement(
+            tag_datfile, "url"
+        ).text = f"https://github.com/dantob/auto-datfile-generator/releases/latest/download/{archive_name}"
 
         # File tag in XML
         fileName = dat
-        fileName = f'{fileName[:-4]}.dat'
-        ET.SubElement(tag_datfile, 'file').text = fileName
+        fileName = f"{fileName[:-4]}.dat"
+        ET.SubElement(tag_datfile, "file").text = fileName
         print(fileName)
 
         # Author tag in XML
-        ET.SubElement(tag_datfile, 'author').text = 'no-intro.org'
+        ET.SubElement(tag_datfile, "author").text = "no-intro.org"
 
         # Command XML tag
-        ET.SubElement(tag_datfile, 'comment').text = '_'
+        ET.SubElement(tag_datfile, "comment").text = "_"
 
         print()
 
@@ -245,9 +243,9 @@ for key, value in no_intro_type.items():
 
     # store clrmamepro XML file
     xmldata = ET.tostring(tag_clrmamepro).decode()
-    xml_filename = 'no-intro.xml' if key == 'standard' else f'no-intro_{key}.xml'
+    xml_filename = "no-intro.xml" if key == "standard" else f"no-intro_{key}.xml"
 
-    with open(xml_filename, 'w', encoding="utf-8") as xmlfile:
+    with open(xml_filename, "w", encoding="utf-8") as xmlfile:
         xmlfile.write(xmldata)
 
-    print('Finished')
+    print("Finished")
