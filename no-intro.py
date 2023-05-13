@@ -1,6 +1,7 @@
 import glob
 import os
 import re
+import sys
 import xml.etree.ElementTree as ET
 import zipfile
 from time import sleep
@@ -14,6 +15,7 @@ from selenium import webdriver
 #from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
+
 #from selenium.webdriver.support.ui import Select
 
 regex = {
@@ -146,6 +148,9 @@ for key, value in no_intro_type.items():
         # wait 5 seconds
         sleep(5)
         TIME_SLEPT += 5
+
+    if NAME == None:
+        sys.exit(1)
 
     # setup archive path and rename
     archive_name = "no-intro.zip" if key == "standard" else f"no-intro_{key}.zip"
