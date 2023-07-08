@@ -1,8 +1,6 @@
 # Auto DAT file generator
 
-![Redump](https://github.com/dantob/auto-datfile-generator/actions/workflows/redump.yml/badge.svg)
-
-![No-Intro](https://github.com/dantob/auto-datfile-generator/actions/workflows/no-intro.yml/badge.svg)
+![Daily Rebuild Status](https://github.com/dantob/auto-datfile-generator/actions/workflows/daily-rebuild.yml/badge.svg)
 
 ## URLs
 
