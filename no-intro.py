@@ -41,7 +41,7 @@ for key, value in no_intro_type.items():
     driver.find_element(by="xpath", value="/html/body/div/header/nav/ul/li[3]/a").click()
 
     # select "daily"
-    driver.find_element(by="xpath", value="/html/body/div/section/article/table[1]/tbody/tr/td/a[5]").click()
+    driver.find_element(by="xpath", value="/html/body/div/header/table/tbody/tr/td/a[5]").click()
 
     #set the type of dat file
     if key == "standard" :
@@ -52,7 +52,7 @@ for key, value in no_intro_type.items():
 
     # select "Request"
     if key == "standard" :
-        driver.find_element(by="xpath", value="/html/body/div/section/article/div/form/input[5]").click()
+        driver.find_element(by="xpath", value="/html/body/div/section/article/div/form/input[7]").click()
     if key == "parent-clone" :
         driver.find_element(by="xpath", value="/html/body/div/section/article/div/form/input[4]").click()
     sleep(5)
