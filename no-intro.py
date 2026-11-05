@@ -36,16 +36,19 @@ for key, value in no_intro_type.items():
 
     try:
         # load website
-        driver.get("https://datomatic.no-intro.org")
+        driver.get("https://datomatic.no-intro.org/index.php")
         print("Loaded no-intro datomatic ...")
+
+        # accept terms and conditions
+        driver.find_element(by="xpath", value="/html/body/div/form/input[2]").click()
 
         # select "DOWNLOAD"
         driver.find_element(by="xpath", value="/html/body/div/header/nav/ul/li[3]/a").click()
 
         # select "daily"
-        driver.find_element(by="xpath", value="/html/body/div/header/table/tbody/tr/td/a[5]").click()
+        driver.find_element(by="xpath", value="/html/body/div/header/div/a[5]").click()
 
-        #set the type of dat file
+        # set the type of dat file
         if key == "standard" :
             driver.find_element(by="xpath", value="//input[@name='dat_type' and @value='dat']").click()
         if key == "parent-clone" :
@@ -54,9 +57,9 @@ for key, value in no_intro_type.items():
 
         # select "Request"
         if key == "standard" :
-            driver.find_element(by="xpath", value="/html/body/div/section/article/div/form/input[7]").click()
+            driver.find_element(by="xpath", value="/html/body/div/section/article/form/input[8]").click()
         if key == "parent-clone" :
-            driver.find_element(by="xpath", value="/html/body/div/section/article/div/form/input[4]").click()
+            driver.find_element(by="xpath", value="/html/body/div/section/article/form/input[5]").click()
         sleep(5)
 
         # retry loop for download
@@ -66,7 +69,7 @@ for key, value in no_intro_type.items():
 
         for attempt in range(max_retries):
             # select "Download"
-            driver.find_element(by="xpath", value="/html/body/div/section/article/div/form[2]/input").click()
+            driver.find_element(by="xpath", value="/html/body/div/section/article/form/input[2]").click()
             print(f"Waiting for download to complete (Attempt {attempt + 1}/{max_retries}) ...")
 
             time_slept = 0
@@ -101,7 +104,7 @@ for key, value in no_intro_type.items():
     if name is None:
         raise FileNotFoundError(f"No-Intro {key} zip file not found after {max_retries} attempts, download failed")
 
-    #setup archive path and rename
+    # setup archive path and rename
     archive_name = "no-intro.zip" if key == "standard" else f"no-intro_{key}.zip"
     archive_full = os.path.join(dir_path, archive_name)
     os.rename(os.path.join(dir_path, name), os.path.join(dir_path, archive_full))
